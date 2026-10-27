@@ -35,6 +35,6 @@ class Assignment extends Model
     // Relationship: Assignment HAS MANY Submissions
     public function submissions()
     {
-        return $this->hasMany(Assignment_Submission::class, 'assignment_id', 'assignment_id');
+        return $this->hasMany(AssignmentSubmission::class, 'assignment_id', 'assignment_id');
     }
 }

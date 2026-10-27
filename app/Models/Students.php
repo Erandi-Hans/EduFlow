@@ -32,13 +32,13 @@ class Student extends Model
     // Relationship: Student HAS MANY Course Enrollments
     public function enrollments()
     {
-        return $this->hasMany(Course_Enrollment::class, 'student_id', 'student_id');
+        return $this->hasMany(CourseEnrollment::class, 'student_id', 'student_id');
     }
 
     // Relationship: Student BELONGS TO MANY Courses (Pivot via course_enrollments)
     public function courses()
     {
-        return $this->belongsToMany(Courses::class, 'course_enrollments', 'student_id', 'course_id')
+        return $this->belongsToMany(Course::class, 'course_enrollments', 'student_id', 'course_id')
             ->withPivot('enrolled_date', 'is_deleted')
             ->withTimestamps();
     }
@@ -46,6 +46,6 @@ class Student extends Model
     // Relationship: Student HAS MANY Assignment Submissions
     public function submissions()
     {
-        return $this->hasMany(Assignment_Submission::class, 'student_id', 'student_id');
+        return $this->hasMany(AssignmentSubmission::class, 'student_id', 'student_id');
     }
 }

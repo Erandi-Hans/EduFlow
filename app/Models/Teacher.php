@@ -32,6 +32,6 @@ class Teacher extends Model
     // Relationship: Teacher HAS MANY Courses
     public function courses()
     {
-        return $this->hasMany(Courses::class, 'teacher_id', 'teacher_id');
+        return $this->hasMany(Course::class, 'teacher_id', 'teacher_id');
     }
 }
