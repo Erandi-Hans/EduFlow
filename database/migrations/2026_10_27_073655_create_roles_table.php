@@ -12,10 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('roles', function (Blueprint $table) {
-            $table->id();
-            $table->String('name')->unique();
-            $table->String('description')->nullable();
-            $table->timestamps(); //Created at Updated at 
+            $table->bigIncrements('role_id');
+            $table->string('role_name'); // e.g., 'Admin', 'Teacher', 'Student'
+
+            // System Audit Fields
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->nullable()->useCurrentOnUpdate();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
+            $table->boolean('is_deleted')->default(false);
         });
     }
 
