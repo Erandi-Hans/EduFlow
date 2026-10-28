@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Teacher;
 
 use App\Http\Controllers\Controller;
 use App\Models\Assignment;
+use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -20,7 +21,7 @@ class AssignmentController extends Controller
 
     public function create()
     {
-        return view('teacher.assignments.create', ['assignment' => null, 'courses' => $this->courses()]);
+        return view('teacher.assignments.create', ['assignment' => null, 'Course' => $this->Course()]);
     }
 
     public function store(Request $request)
@@ -34,7 +35,7 @@ class AssignmentController extends Controller
     {
         $this->authorizeOwner($assignment);
 
-        return view('teacher.assignments.edit', ['assignment' => $assignment, 'courses' => $this->courses()]);
+        return view('teacher.assignments.edit', ['assignment' => $assignment, 'Course' => $this->Course()]);
     }
 
     public function update(Request $request, Assignment $assignment)
@@ -53,14 +54,14 @@ class AssignmentController extends Controller
         return redirect()->route('teacher.assignments.index')->with('success', 'Assignment deleted.');
     }
 
-    private function courses()
+    private function Course()
     {
-        return auth()->user()->teacher->courses()->orderBy('course_name')->get();
+        return auth::user()->teacher->Course()->orderBy('course_name')->get();
     }
 
     private function courseIds()
     {
-        return auth()->user()->teacher->courses()->pluck('course_id');
+        return auth::user()->teacher->Course()->pluck('course_id');
     }
 
     private function authorizeOwner(Assignment $assignment): void
@@ -70,13 +71,13 @@ class AssignmentController extends Controller
 
     private function validated(Request $request): array
     {
-        $teacherId = auth()->user()->teacher->teacher_id;
+        $teacherId = Auth::user()->teacher->teacher_id;
 
         return $request->validate([
             'title'       => ['required', 'string', 'max:150'],
             'description' => ['nullable', 'string', 'max:3000'],
             'due_date'    => ['required', 'date'],
-            'course_id'   => ['required', Rule::exists('courses', 'course_id')->where('teacher_id', $teacherId)],
+            'course_id'   => ['required', Rule::exists('Course', 'course_id')->where('teacher_id', $teacherId)],
         ]);
     }
 }

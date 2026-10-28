@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Student;
 use App\Http\Controllers\Controller;
 use App\Models\Assignment;
 use App\Models\AssignmentSubmission;
+use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -14,10 +15,10 @@ class SubmissionController extends Controller
 
     public function store(Request $request, Assignment $assignment)
     {
-        $student = auth()->user()->student;
+        $student = auth::user()->student;
 
         abort_unless(
-            $student->courses()->where('courses.course_id', $assignment->course_id)->exists(),
+            $student->Course()->where('Course.course_id', $assignment->course_id)->exists(),
             403
         );
 
@@ -80,6 +81,6 @@ class SubmissionController extends Controller
 
     private function authorizeOwner(AssignmentSubmission $submission): void
     {
-        abort_unless($submission->student_id === auth()->user()->student->student_id, 403);
+        abort_unless($submission->student_id === Auth::user()->student->student_id, 403);
     }
 }

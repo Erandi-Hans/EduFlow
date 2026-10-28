@@ -4,23 +4,24 @@ namespace App\Http\Controllers\Teacher;
 
 use App\Http\Controllers\Controller;
 use App\Models\Course;
+use Auth;
 
 class CourseController extends Controller
 {
     public function index()
     {
-        $courses = auth()->user()->teacher->courses()
-            ->withCount(['students', 'assignments'])->orderBy('course_name')->get();
+        $Course = auth::user()->teacher->Course()
+            ->withCount(['Student', 'assignments'])->orderBy('course_name')->get();
 
-        return view('teacher.courses.index', compact('courses'));
+        return view('teacher.Course.index', compact('Course'));
     }
 
     public function show(Course $course)
     {
-        abort_unless($course->teacher_id === auth()->user()->teacher->teacher_id, 403);
+        abort_unless($course->teacher_id === Auth::user()->teacher->teacher_id, 403);
 
-        $students = $course->students()->whereHas('user')->orderBy('first_name')->get();
+        $Student = $course->Student()->whereHas('user')->orderBy('first_name')->get();
 
-        return view('teacher.courses.show', compact('course', 'students'));
+        return view('teacher.Course.show', compact('course', 'Student'));
     }
 }

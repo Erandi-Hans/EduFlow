@@ -12,7 +12,7 @@ class StudentController extends Controller
     {
         $search = trim((string) $request->query('q'));
 
-        $students = Student::with(['user', 'courses'])
+        $Student = Student::with(['user', 'Course'])
             ->whereHas('user')
             ->when($search, fn($q) => $q->where(function ($w) use ($search) {
                 $w->where('first_name', 'like', "%$search%")->orWhere('last_name', 'like', "%$search%");
@@ -21,6 +21,6 @@ class StudentController extends Controller
             ->paginate(15)
             ->withQueryString();
 
-        return view('teacher.students.index', compact('students', 'search'));
+        return view('teacher.Student.index', compact('Student', 'search'));
     }
 }

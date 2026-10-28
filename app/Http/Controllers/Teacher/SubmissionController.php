@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Teacher;
 use App\Http\Controllers\Controller;
 use App\Models\Assignment;
 use App\Models\AssignmentSubmission;
+use Auth;
 use Illuminate\Http\Request;
 
 class SubmissionController extends Controller
@@ -35,7 +36,7 @@ class SubmissionController extends Controller
     private function authorizeOwner(Assignment $assignment): void
     {
         abort_unless(
-            $assignment->course->teacher_id === auth()->user()->teacher->teacher_id,
+            $assignment->course->teacher_id === Auth::user()->teacher->teacher_id,
             403
         );
     }

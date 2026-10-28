@@ -5,13 +5,14 @@ namespace App\Http\Controllers\Student;
 use App\Http\Controllers\Controller;
 use App\Models\Assignment;
 use App\Models\AssignmentSubmission;
+use Auth;
 
 class AssignmentController extends Controller
 {
     public function index()
     {
-        $student   = auth()->user()->student;
-        $courseIds = $student->courses()->pluck('courses.course_id');
+        $student   = Auth::user()->student;
+        $courseIds = $student->Course()->pluck('Course.course_id');
 
         $assignments = Assignment::with('course')
             ->whereIn('course_id', $courseIds)

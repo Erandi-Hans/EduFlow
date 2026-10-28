@@ -2,24 +2,13 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Role extends Model
 {
-    use HasFactory;
-
-    protected $table = 'roles';
     protected $primaryKey = 'role_id';
-
-    protected $fillable = [
-        'role_name',
-        'created_by',
-        'updated_by',
-        'is_deleted',
-    ];
-
-    //Relationship:Role Has Many Users
+    public $timestamps = false;
+    protected $fillable = ['role_name'];
 
     public function users()
     {

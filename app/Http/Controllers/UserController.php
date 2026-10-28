@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
@@ -104,7 +105,7 @@ class UserController extends Controller
     /** Soft delete: the row stays in the database with is_deleted = true. */
     public function destroy(User $user)
     {
-        abort_if($user->user_id === auth()->id() || $user->hasRole('Admin'), 403, 'This account cannot be removed.');
+        abort_if($user->user_id === Auth::id() || $user->hasRole('Admin'), 403, 'This account cannot be removed.');
 
         $user->update(['is_deleted' => true]);
 

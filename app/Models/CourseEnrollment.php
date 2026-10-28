@@ -9,7 +9,7 @@ class CourseEnrollment extends Model
 {
     use HasFactory;
 
-    protected $table = 'course_enrollments';
+    protected $table = 'CourseEnrollments';
     protected $primaryKey = 'enrollment_id';
 
     protected $fillable = [
