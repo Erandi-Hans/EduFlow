@@ -28,12 +28,12 @@
             </tr>
         </thead>
         <tbody class="divide-y divide-slate-100">
-            @forelse ($users as $u)
+            @forelse ($members as $u)
             <tr>
                 <td class="td font-medium">{{ $u->displayName() }}</td>
                 <td class="td">{{ $u->username }}</td>
                 <td class="td">{{ $u->email }}</td>
-                <td class="td"><span class="badge">{{ $u->role->role_name }}</span></td>
+                <span class="badge">{{ $u->user?->role?->role_name ?? 'N/A' }}</span>
                 <td class="td">
                     <div class="flex items-center justify-end gap-4">
                         <a href="{{ route('admin.users.edit', $u) }}" class="link">Edit</a>
@@ -53,5 +53,5 @@
     </table>
 </div>
 
-<div class="mt-4">{{ $users->links() }}</div>
+<div class="mt-4">{{ $members->links() }}</div>
 @endsection
