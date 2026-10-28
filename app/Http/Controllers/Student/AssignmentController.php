@@ -12,7 +12,7 @@ class AssignmentController extends Controller
     public function index()
     {
         $student   = Auth::user()->student;
-        $courseIds = $student->Course()->pluck('Course.course_id');
+        $courseIds = $student->Course()->pluck('Courses.course_id');
 
         $assignments = Assignment::with('course')
             ->whereIn('course_id', $courseIds)

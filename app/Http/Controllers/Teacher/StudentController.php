@@ -21,6 +21,6 @@ class StudentController extends Controller
             ->paginate(15)
             ->withQueryString();
 
-        return view('teacher.Student.index', compact('Student', 'search'));
+        return view('teacher.Students.index', compact('Student', 'search'));
     }
 }

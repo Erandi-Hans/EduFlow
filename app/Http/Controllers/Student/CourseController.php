@@ -12,8 +12,8 @@ class CourseController extends Controller
     {
         $student  = Auth::user()->student;
         $Course  = Course::with('teacher')->orderBy('course_name')->get();
-        $enrolled = $student->Course()->pluck('Course.course_id')->all();
+        $enrolled = $student->Course()->pluck('Courses.course_id')->all();
 
-        return view('student.Course.index', compact('Course', 'enrolled'));
+        return view('student.Courses.index', compact('Course', 'enrolled'));
     }
 }

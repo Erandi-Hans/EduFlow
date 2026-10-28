@@ -15,7 +15,7 @@ class CourseController extends Controller
     {
         $Course = Course::with('teacher')->withCount('Student')->latest()->paginate(10);
 
-        return view('admin.Course.index', compact('Course'));
+        return view('admin.Courses.index', compact('Course'));
     }
 
     public function create()

@@ -13,7 +13,7 @@ class CourseController extends Controller
         $Course = auth::user()->teacher->Course()
             ->withCount(['Student', 'assignments'])->orderBy('course_name')->get();
 
-        return view('teacher.Course.index', compact('Course'));
+        return view('teacher.Courses.index', compact('Course'));
     }
 
     public function show(Course $course)
