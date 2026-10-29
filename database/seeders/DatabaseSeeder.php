@@ -68,5 +68,7 @@ class DatabaseSeeder extends Seeder
             'due_date'    => now()->addDays(7),
             'course_id'   => $course->course_id,
         ]);
+
+        $this->call(TeacherSeeder::class);
     }
 }
