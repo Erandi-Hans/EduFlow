@@ -26,8 +26,8 @@ $initials = \Illuminate\Support\Str::upper(collect(explode(' ', trim($name)))->m
     {{-- Side cards --}}
     <div class="space-y-5">
         <div class="rounded-2xl border border-slate-200 bg-white p-6 text-center">
-            @if ($user->photo_url)
-            <img src="{{ $user->photo_url }}" alt="{{ $name }}" class="mx-auto h-[72px] w-[72px] rounded-full object-cover">
+            @if ($user->profile_photo)
+            <img src="{{ $user->profile_photo }}" alt="{{ $name }}" class="mx-auto h-[72px] w-[72px] rounded-full object-cover">
             @else
             <span class="mx-auto flex h-[72px] w-[72px] items-center justify-center rounded-full bg-[#E6F4F2] text-2xl font-extrabold text-[#00786F]">{{ $initials }}</span>
             @endif

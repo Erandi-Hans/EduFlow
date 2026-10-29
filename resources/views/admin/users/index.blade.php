@@ -57,8 +57,8 @@ $iconBtn = 'flex h-9 w-9 items-center justify-center rounded-lg border border-sl
             <tr class="hover:bg-slate-50/60">
                 <td class="px-4 py-4">
                     <div class="flex items-center gap-3">
-                        @if ($m->user->photo_url)
-                        <img src="{{ $m->user->photo_url }}" alt="{{ $name }}" class="h-10 w-10 shrink-0 rounded-full object-cover">
+                        @if ($m->user->profile_photo)
+                        <img src="{{ $m->user->profile_photo}}" alt="{{ $name }}" class="h-10 w-10 shrink-0 rounded-full object-cover">
                         @else
                         <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#E6F4F2] text-xs font-extrabold text-[#00786F]">{{ $initials($name) }}</span>
                         @endif

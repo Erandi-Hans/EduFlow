@@ -41,8 +41,8 @@ $sections = [
     <div class="mb-8 flex items-center gap-5">
         <div>
             <!--profile photo sections-->
-            <img id="photo-preview" src="{{ $user?->photo_url }}" alt="" class="h-20 w-20 rounded-full object-cover {{ $user?->photo_url ? '' : 'hidden' }}">
-            <span id="photo-initials" class="flex h-20 w-20 items-center justify-center rounded-full bg-[#E6F4F2] text-xl font-extrabold text-[#00786F] {{ $user?->photo_url ? 'hidden' : '' }}">{{ $photoInitials }}</span>
+            <img id="photo-preview" src="{{ $user?->profile_photo }}" alt="" class="h-20 w-20 rounded-full object-cover {{ $user?->profile_photo ? '' : 'hidden' }}">
+            <span id="photo-initials" class="flex h-20 w-20 items-center justify-center rounded-full bg-[#E6F4F2] text-xl font-extrabold text-[#00786F] {{ $user?->profile_photo ? 'hidden' : '' }}">{{ $photoInitials ?? 'U' }}</span>
         </div>
         <div>
             <!--if the form is edit mode custom button as 'Change Photo' and if it is Create Mode custom button as 'Upload photo'-->
@@ -50,34 +50,19 @@ $sections = [
                 <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" />
                 </svg>
-                {{ $isEdit ? 'Change photo' : 'Upload photo' }}
+                {{ $isEdit ?? false ? 'Change photo' : 'Upload photo' }}
             </label>
             <input id="photo" name="photo" type="file" accept="image/png,image/jpeg,image/webp" class="hidden" onchange="previewPhoto(this)">
             <p class="mt-2 text-xs text-slate-500">JPG, PNG or WEBP, up to 2 MB.</p>
 
             <!-- if we want to remove the profile photo in Edit Mode , show the checkbox -->
-            @if ($isEdit && $user->profile_photo)
+            @if (($isEdit ?? false) && $user?->profile_photo)
             <label class="mt-2 flex items-center gap-2 text-xs text-slate-600">
                 <input type="checkbox" name="remove_photo" value="1" class="h-4 w-4 rounded border-slate-300 accent-[#00786F]"> Remove current photo
             </label>
-            <!-- When the photo uploading time if validation error come show in red color -->
             @endif
             @error('photo')<p class="mt-1 text-xs text-red-500">{{ $message }}</p>@enderror
         </div>
-
-        <div>
-            @if(isset($user) && $user?->profile_photo)
-            <!-- if profile photo have show it -->
-            <img src="{{ asset('storage/' . $user->profile_photo) }}" alt="{{ $user->name }}" class="h-10 w-10 rounded-full object-cover">
-            @else
-            <!-- if we don't have profile photo, show initials -->
-            <div class="flex h-10 w-10 items-center justify-center rounded-full bg-teal-50 text-teal-700 font-semibold">
-                {{ isset($user) ? strtoupper(substr($user->name, 0, 2)) : 'U' }}
-            </div>
-            @endif
-        </div>
-
-
     </div>
 
     <!--Call above sections array one by one create section numbering and heading  -->
