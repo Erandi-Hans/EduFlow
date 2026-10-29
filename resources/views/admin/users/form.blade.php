@@ -64,9 +64,23 @@ $sections = [
             @endif
             @error('photo')<p class="mt-1 text-xs text-red-500">{{ $message }}</p>@enderror
         </div>
+
+        <div>
+            @if(isset($user) && $user?->profile_photo)
+            <!-- if profile photo have show it -->
+            <img src="{{ asset('storage/' . $user->profile_photo) }}" alt="{{ $user->name }}" class="h-10 w-10 rounded-full object-cover">
+            @else
+            <!-- if we don't have profile photo, show initials -->
+            <div class="flex h-10 w-10 items-center justify-center rounded-full bg-teal-50 text-teal-700 font-semibold">
+                {{ isset($user) ? strtoupper(substr($user->name, 0, 2)) : 'U' }}
+            </div>
+            @endif
+        </div>
+
+
     </div>
 
-    <!--Call abouve sections array one by one create section numbering and heading  -->
+    <!--Call above sections array one by one create section numbering and heading  -->
     @foreach ($sections as [$num, $title, $fields])
 
     <div class="{{ $num > 1 ? 'mt-8' : '' }} mb-4 flex items-center gap-2 text-xs font-extrabold uppercase tracking-widest text-[#00786F]">
