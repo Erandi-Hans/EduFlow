@@ -17,7 +17,7 @@ $initials = \Illuminate\Support\Str::upper(collect(explode(' ', trim($name)))->m
 <div class="grid items-start gap-5 lg:grid-cols-3">
 
     {{-- Form --}}
-    <form method="POST" action="{{ route('admin.users.update', $user->user_id) }}" class="lg:col-span-2">
+    <form method="POST" action="{{ route('admin.users.update', $user->user_id) }}" enctype="multipart/form-data" class="lg:col-span-2">
         @csrf
         @method('PUT')
         @include('admin.users.form')
@@ -26,7 +26,11 @@ $initials = \Illuminate\Support\Str::upper(collect(explode(' ', trim($name)))->m
     {{-- Side cards --}}
     <div class="space-y-5">
         <div class="rounded-2xl border border-slate-200 bg-white p-6 text-center">
+            @if ($user->photo_url)
+            <img src="{{ $user->photo_url }}" alt="{{ $name }}" class="mx-auto h-[72px] w-[72px] rounded-full object-cover">
+            @else
             <span class="mx-auto flex h-[72px] w-[72px] items-center justify-center rounded-full bg-[#E6F4F2] text-2xl font-extrabold text-[#00786F]">{{ $initials }}</span>
+            @endif
             <h2 class="mt-3 text-lg font-extrabold text-slate-900">{{ $name }}</h2>
             <p class="text-sm text-slate-500">{{ $user->email }}</p>
             <span class="mt-3 inline-block rounded-full bg-[#E6F4F2] px-3 py-1 text-xs font-bold text-[#00786F]">{{ ucfirst($type) }}</span>
@@ -59,7 +63,9 @@ $initials = \Illuminate\Support\Str::upper(collect(explode(' ', trim($name)))->m
             <h2 class="text-base font-bold text-slate-900">Remove member</h2>
             <p class="mb-4 mt-1 text-sm text-slate-500">Soft delete: the member disappears from the system and can no longer log in.</p>
             <form method="POST" action="{{ route('admin.users.destroy', $user->user_id) }}"
-                onsubmit="return confirm('Remove {{ addslashes($name) }}? They will no longer be able to log in.')">
+                data-confirm-title="Remove {{ $name }}?"
+                data-confirm-text="They will no longer be able to log in. This is a soft delete, so the record is kept."
+                data-confirm-button="Yes, remove">
                 @csrf
                 @method('DELETE')
                 <button type="submit" class="inline-flex items-center gap-2 rounded-lg bg-[#c0392b] px-4 py-2 text-xs font-bold text-white hover:bg-[#a93226]">
@@ -72,4 +78,5 @@ $initials = \Illuminate\Support\Str::upper(collect(explode(' ', trim($name)))->m
         </div>
     </div>
 </div>
+@include('layouts.partials.confirm-modal')
 @endsection

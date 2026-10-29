@@ -57,7 +57,11 @@ $iconBtn = 'flex h-9 w-9 items-center justify-center rounded-lg border border-sl
             <tr class="hover:bg-slate-50/60">
                 <td class="px-4 py-4">
                     <div class="flex items-center gap-3">
+                        @if ($m->user->photo_url)
+                        <img src="{{ $m->user->photo_url }}" alt="{{ $name }}" class="h-10 w-10 shrink-0 rounded-full object-cover">
+                        @else
                         <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#E6F4F2] text-xs font-extrabold text-[#00786F]">{{ $initials($name) }}</span>
+                        @endif
                         <div class="min-w-0">
                             <p class="truncate font-bold text-slate-900">{{ $name }}</p>
                             <p class="truncate text-xs text-slate-500">{{ $email }}</p>
@@ -94,7 +98,9 @@ $iconBtn = 'flex h-9 w-9 items-center justify-center rounded-lg border border-sl
                             </svg>
                         </a>
                         <form method="POST" action="{{ route('admin.users.destroy', $m->user_id) }}"
-                            onsubmit="return confirm('Remove {{ addslashes($name) }}? They will no longer be able to log in.')">
+                            data-confirm-title="Remove {{ $name }}?"
+                            data-confirm-text="They will no longer be able to log in. This is a soft delete, so the record is kept."
+                            data-confirm-button="Yes, remove">
                             @csrf
                             @method('DELETE')
                             <button type="submit" aria-label="Remove" class="{{ $iconBtn }} hover:bg-red-50 hover:text-red-600">
@@ -118,4 +124,5 @@ $iconBtn = 'flex h-9 w-9 items-center justify-center rounded-lg border border-sl
 @if ($members->hasPages())
 <div class="mt-4">{{ $members->links() }}</div>
 @endif
+@include('layouts.partials.confirm-modal')
 @endsection

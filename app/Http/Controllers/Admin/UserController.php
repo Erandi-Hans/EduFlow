@@ -9,11 +9,11 @@ use App\Models\Teacher;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 /**
- * Admin: manage teachers and students (full CRUD).
+ * Admin: manage teachers and students (full CRUD) with a profile photo.
  * Delete = soft delete (users.is_deleted = true), so the member disappears everywhere and cannot log in.
  */
 class UserController extends Controller
@@ -41,13 +41,19 @@ class UserController extends Controller
         $type = $request->input('type') === 'student' ? 'student' : 'teacher';
         $data = $request->validate($this->rules($type));
 
-        DB::transaction(function () use ($data, $type) {
+        // Saved in storage/app/public/profile-photos (needs: php artisan storage:link)
+        $photo = $request->hasFile('photo')
+            ? $request->file('photo')->store('profile-photos', 'public')
+            : null;
+
+        DB::transaction(function () use ($data, $type, $photo) {
             $user = User::create([
-                'username'   => $data['username'],
-                'email'      => $data['email'],
-                'password'   => $data['password'],            // hashed by the model cast
-                'role_id'    => Role::where('role_name', ucfirst($type))->value('role_id'),
-                'is_deleted' => false,
+                'username'      => $data['username'],
+                'email'         => $data['email'],
+                'password'      => $data['password'],            // hashed by the model cast
+                'role_id'       => Role::where('role_name', ucfirst($type))->value('role_id'),
+                'is_deleted'    => false,
+                'profile_photo' => $photo,
             ]);
 
             $profile = $this->profileData($type, $data) + ['user_id' => $user->user_id];
@@ -78,6 +84,19 @@ class UserController extends Controller
             $attrs['password'] = $data['password'];
         }
 
+        if ($request->hasFile('photo')) {
+            // new photo uploaded: delete the old file, keep the new one
+            if ($user->profile_photo) {
+                Storage::disk('public')->delete($user->profile_photo);
+            }
+            $attrs['profile_photo'] = $request->file('photo')->store('profile-photos', 'public');
+        } elseif ($request->boolean('remove_photo')) {
+            if ($user->profile_photo) {
+                Storage::disk('public')->delete($user->profile_photo);
+            }
+            $attrs['profile_photo'] = null;
+        }
+
         DB::transaction(function () use ($user, $type, $attrs, $data) {
             $user->update($attrs);
 
@@ -94,7 +113,7 @@ class UserController extends Controller
     {
         $type = $this->typeOf($user);
 
-        $user->update(['is_deleted' => true]);   // soft delete
+        $user->update(['is_deleted' => true]);   // soft delete (the photo file is kept)
 
         return redirect()
             ->route('admin.users.index', ['type' => $type === 'student' ? 'students' : 'teachers'])
@@ -131,6 +150,7 @@ class UserController extends Controller
             'email'      => ['required', 'email', 'max:255', $email],
             'username'   => ['required', 'string', 'max:100', $username],
             'password'   => $user ? ['nullable', 'string', 'min:8'] : ['required', 'string', 'min:8'],
+            'photo'      => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],   // 2 MB
         ];
 
         return $rules + ($type === 'teacher'

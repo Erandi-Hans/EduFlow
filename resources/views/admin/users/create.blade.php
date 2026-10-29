@@ -22,7 +22,7 @@
 <div class="grid items-start gap-5 lg:grid-cols-3">
 
     {{-- Form --}}
-    <form method="POST" action="{{ route('admin.users.store') }}" class="lg:col-span-2">
+    <form method="POST" action="{{ route('admin.users.store') }}" enctype="multipart/form-data" class="lg:col-span-2">
         @csrf
         <input type="hidden" name="type" value="{{ $type }}">
         @include('admin.users.form')
