@@ -21,30 +21,13 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $type = $request->query('type') === 'students' ? 'students' : 'teachers';
-        $filter = $type;
-        $enrollments = collect();
 
-        if ($type === 'teachers') {
-            $members = Teacher::with('user')->whereHas('user')->orderBy('first_name')->paginate(10);
-        } else {
-            $members = Student::with('user')->whereHas('user')->orderBy('first_name')->paginate(10);
+        $members = $type === 'teachers'
+            ? Teacher::with('user')->whereHas('user')->orderBy('first_name')->paginate(10)->withQueryString()
+            : Student::with(['user', 'Course'])->whereHas('user')->orderBy('first_name')->paginate(10)->withQueryString();
 
-            $q = DB::table('course_enrollments')
-                ->join('courses', 'courses.course_id', '=', 'course_enrollments.course_id')
-                ->whereIn('course_enrollments.student_id', $members->pluck('student_id'))
-                ->select('course_enrollments.student_id', 'courses.course_code');
-
-            if (Schema::hasColumn('course_enrollments', 'created_at')) {
-                $q->addSelect('course_enrollments.created_at as enrolled_at');
-            }
-
-            $enrollments = $q->get()->groupBy('student_id');
-        }
-
-
-        return view('admin.users.index', compact('type', 'filter', 'members', 'enrollments'));
+        return view('admin.users.index', compact('type', 'members'));
     }
-
 
     public function create(Request $request)
     {

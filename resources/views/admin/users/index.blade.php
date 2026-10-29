@@ -1,117 +1,121 @@
 @extends('layouts.app')
+@section('title', 'Users')
 
 @section('content')
-<div class="max-w-7xl mx-auto py-10 px-4 sm:px-6 space-y-8">
-    <!-- Success Alert Message -->
-    @if(session('success'))
-    <div class="flex items-center justify-between bg-teal-50 border border-teal-200 text-teal-800 px-6 py-4 rounded-2xl shadow-sm transition-all">
-        <div class="flex items-center gap-3">
-            <svg class="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <span class="text-sm font-bold">{{ session('success') }}</span>
-        </div>
+@php
+$isStudents = $type === 'students';
+$initials = fn ($n) => \Illuminate\Support\Str::upper(collect(explode(' ', trim($n)))->map(fn ($p) => mb_substr($p, 0, 1))->take(2)->implode(''));
+$iconBtn = 'flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-[#E6F4F2] hover:text-[#00786F]';
+@endphp
+
+{{-- Header --}}
+<div class="mb-5 flex flex-wrap items-start justify-between gap-3">
+    <div>
+        <h1 class="text-2xl font-extrabold text-slate-900">Users</h1>
+        <p class="text-sm text-slate-500">Manage teachers and students.</p>
     </div>
-    @endif
-
-    <!-- Top Header & Action Buttons -->
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div>
-            <div class="text-xs font-bold uppercase tracking-wider text-teal-600 mb-1">Admin Dashboard / User Management</div>
-            <h1 class="text-3xl font-black text-slate-900 tracking-tight">System Users</h1>
-            <p class="text-sm text-slate-500 mt-1">Manage all registered teachers and students with role controls.</p>
-        </div>
-
-        <div class="flex items-center gap-3">
-            <a href="{{ route('admin.users.create', ['type' => 'teacher']) }}"
-                class="inline-flex items-center gap-2 px-5 py-3 rounded-xl text-xs font-extrabold uppercase tracking-wider text-white bg-teal-600 hover:bg-teal-700 shadow-lg shadow-teal-600/30 transition-all duration-200">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                </svg>
-                Add Teacher
-            </a>
-            <a href="{{ route('admin.users.create', ['type' => 'student']) }}"
-                class="inline-flex items-center gap-2 px-5 py-3 rounded-xl text-xs font-extrabold uppercase tracking-wider text-teal-700 bg-teal-50 hover:bg-teal-100 border border-teal-200/80 transition-all duration-200">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                </svg>
-                Add Student
-            </a>
-        </div>
-    </div>
-
-    <!-- Filter Tabs -->
-    <div class="flex items-center gap-2 bg-slate-200/60 p-1.5 rounded-2xl w-fit border border-slate-300/40">
-        <a href="{{ route('admin.users.index', ['type' => 'teachers']) }}"
-            class="px-6 py-2 text-xs font-bold rounded-xl transition-all duration-200 {{ $type === 'teachers' ? 'bg-white text-teal-700 shadow-md shadow-slate-200' : 'text-slate-600 hover:text-slate-900' }}">
-            Teachers Directory
-        </a>
-        <a href="{{ route('admin.users.index', ['type' => 'students']) }}"
-            class="px-6 py-2 text-xs font-bold rounded-xl transition-all duration-200 {{ $type === 'students' ? 'bg-white text-teal-700 shadow-md shadow-slate-200' : 'text-slate-600 hover:text-slate-900' }}">
-            Students Directory
-        </a>
-    </div>
-
-    <!-- Main Table Card -->
-    <div class="bg-white rounded-3xl border border-slate-200/80 shadow-xl shadow-slate-200/50 overflow-hidden">
-        <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
-                <thead>
-                    <tr class="bg-slate-50/80 border-b border-slate-100 text-slate-400 uppercase text-[10px] tracking-widest font-black">
-                        <th class="py-4 px-6">Full Name</th>
-                        <th class="py-4 px-6">Username</th>
-                        <th class="py-4 px-6">Email Address</th>
-                        <th class="py-4 px-6">Role / Details</th>
-                        <th class="py-4 px-6 text-right">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100 text-sm font-medium">
-                    @forelse ($members as $u)
-                    <tr class="hover:bg-slate-50/50 transition-colors">
-                        <td class="py-4 px-6 text-slate-800 font-bold">
-                            {{ $u->displayName() }}
-                        </td>
-                        <td class="py-4 px-6 text-slate-600 font-mono text-xs">
-                            {{ $u->user?->username ?? 'N/A' }}
-                        </td>
-                        <td class="py-4 px-6 text-slate-600">
-                            {{ $u->user?->email ?? 'N/A' }}
-                        </td>
-                        <td class="py-4 px-6">
-                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-teal-50 text-teal-700 border border-teal-200/60">
-                                {{ $u->user?->role?->role_name ?? ucfirst(str_replace('s', '', $type)) }}
-                            </span>
-                        </td>
-                        <td class="py-4 px-6 text-right space-x-3">
-                            <a href="{{ route('admin.users.edit', $u->user?->user_id ?? 1) }}" class="text-xs font-bold text-teal-600 hover:text-teal-800 transition-colors">
-                                Edit
-                            </a>
-                            <form action="{{ route('admin.users.destroy', $u->user?->user_id ?? 1) }}" method="POST" class="inline-block" onsubmit="return confirm('Are you sure you want to remove this user?');">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="text-xs font-bold text-red-500 hover:text-red-700 transition-colors">
-                                    Remove
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="5" class="py-12 text-center text-slate-400 font-medium">
-                            No records found for {{ $type }}.
-                        </td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Pagination Footer -->
-        @if(method_exists($members, 'links'))
-        <div class="px-6 py-4 bg-slate-50 border-t border-slate-100">
-            {{ $members->links() }}
-        </div>
-        @endif
-    </div>
+    <a href="{{ route('admin.users.create', ['type' => $isStudents ? 'student' : 'teacher']) }}"
+        class="inline-flex items-center gap-2 rounded-xl bg-[#00786F] px-4 py-2.5 text-sm font-bold text-white hover:bg-[#00948a]">
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" viewBox="0 0 24 24">
+            <path d="M12 5v14M5 12h14" />
+        </svg>
+        Add {{ $isStudents ? 'student' : 'teacher' }}
+    </a>
 </div>
+
+{{-- Tabs --}}
+<div class="mb-5 inline-flex rounded-xl bg-[#E6F4F2] p-1">
+    <a href="{{ route('admin.users.index', ['type' => 'teachers']) }}"
+        class="rounded-lg px-5 py-2 text-sm font-semibold {{ ! $isStudents ? 'bg-white text-[#00786F] shadow-sm' : 'text-slate-500 hover:text-[#00786F]' }}">Teachers</a>
+    <a href="{{ route('admin.users.index', ['type' => 'students']) }}"
+        class="rounded-lg px-5 py-2 text-sm font-semibold {{ $isStudents ? 'bg-white text-[#00786F] shadow-sm' : 'text-slate-500 hover:text-[#00786F]' }}">Students</a>
+</div>
+
+{{-- Table --}}
+<div class="overflow-x-auto rounded-2xl border border-slate-200 bg-white p-2 sm:p-4">
+    <table class="w-full min-w-[640px] text-left text-sm">
+        <thead>
+            <tr class="border-b border-slate-200 text-[11px] font-bold uppercase tracking-widest text-slate-400">
+                @if ($isStudents)
+                <th class="px-4 py-3">Student</th>
+                <th class="px-4 py-3">Course</th>
+                <th class="px-4 py-3">Enrolled</th>
+                @else
+                <th class="px-4 py-3">Teacher</th>
+                <th class="px-4 py-3">Qualification</th>
+                <th class="px-4 py-3">Status</th>
+                @endif
+                <th class="px-4 py-3"></th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+            @forelse ($members as $m)
+            @php
+            $name = $m->full_name;
+            $email = $m->user->email;
+            @endphp
+            <tr class="hover:bg-slate-50/60">
+                <td class="px-4 py-4">
+                    <div class="flex items-center gap-3">
+                        <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#E6F4F2] text-xs font-extrabold text-[#00786F]">{{ $initials($name) }}</span>
+                        <div class="min-w-0">
+                            <p class="truncate font-bold text-slate-900">{{ $name }}</p>
+                            <p class="truncate text-xs text-slate-500">{{ $email }}</p>
+                        </div>
+                    </div>
+                </td>
+
+                @if ($isStudents)
+                @php
+                $courses = $m->Course;
+                $enrolled = $courses->map(fn ($c) => $c->pivot->created_at ?? null)->filter()->min() ?: $m->user->created_at;
+                @endphp
+                <td class="px-4 py-4">
+                    @forelse ($courses->take(3) as $c)
+                    <span class="mr-1 inline-block rounded-full bg-[#E6F4F2] px-3 py-1 text-xs font-bold text-[#00786F]">{{ $c->course_code }}</span>
+                    @empty
+                    <span class="text-slate-400">Not enrolled</span>
+                    @endforelse
+                    @if ($courses->count() > 3)
+                    <span class="text-xs text-slate-500">+{{ $courses->count() - 3 }}</span>
+                    @endif
+                </td>
+                <td class="whitespace-nowrap px-4 py-4 text-slate-700">{{ $enrolled ? \Carbon\Carbon::parse($enrolled)->format('M d') : '—' }}</td>
+                @else
+                <td class="px-4 py-4 text-slate-700">{{ $m->qualification ?: '—' }}</td>
+                <td class="px-4 py-4"><span class="rounded-full bg-[#E6F4F2] px-3 py-1 text-xs font-bold text-[#00786F]">Active</span></td>
+                @endif
+
+                <td class="px-4 py-4">
+                    <div class="flex items-center justify-end gap-2">
+                        <a href="{{ route('admin.users.edit', $m->user_id) }}" aria-label="Edit" class="{{ $iconBtn }}">
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                <path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" />
+                            </svg>
+                        </a>
+                        <form method="POST" action="{{ route('admin.users.destroy', $m->user_id) }}"
+                            onsubmit="return confirm('Remove {{ addslashes($name) }}? They will no longer be able to log in.')">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" aria-label="Remove" class="{{ $iconBtn }} hover:bg-red-50 hover:text-red-600">
+                                <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                    <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" />
+                                </svg>
+                            </button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            @empty
+            <tr>
+                <td colspan="4" class="px-4 py-12 text-center text-slate-400">No {{ $type }} yet.</td>
+            </tr>
+            @endforelse
+        </tbody>
+    </table>
+</div>
+
+@if ($members->hasPages())
+<div class="mt-4">{{ $members->links() }}</div>
+@endif
 @endsection
