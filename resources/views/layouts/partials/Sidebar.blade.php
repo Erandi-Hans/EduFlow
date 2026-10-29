@@ -36,8 +36,16 @@ $initials = \Illuminate\Support\Str::upper(collect(explode(' ', trim($name)))->m
 
     {{-- Menu (changes with the role) --}}
     @foreach ($nav as [$label, $route, $pattern, $icon])
-    @php $active = request()->routeIs($pattern); @endphp
-    <a href="{{ route($route) }}"
+    @php
+    $active = request()->routeIs($pattern);
+
+    // මෙන්න මෙතනට Teacher සහ Student ප්ලැට්ෆෝම් වල Coming Soon වෙන්න ඕන ලින්ක්ස් ටික දෙන්න
+    $comingSoonItems = ['Courses', 'My Courses', 'Students', 'Assignments'];
+    $isComingSoon = in_array($label, $comingSoonItems);
+    @endphp
+
+    <a href="{{ $isComingSoon ? '#' : route($route) }}"
+        @if($isComingSoon) onclick="showComingSoonModal(event)" @endif
         class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition {{ $active ? 'bg-[#00786F] text-white shadow-sm' : 'text-slate-500 hover:bg-[#E6F4F2] hover:text-[#00786F]' }}">
         <svg class="h-[18px] w-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">{!! $icons[$icon] !!}</svg>
         {{ $label }}

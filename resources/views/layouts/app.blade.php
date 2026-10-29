@@ -125,6 +125,7 @@
             if (e.target === logoutDialog) logoutDialog.close();
         });
     </script>
+    @include('components.coming-soon-modal')
 </body>
 
 </html>
