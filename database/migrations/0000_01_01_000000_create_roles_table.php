@@ -10,6 +10,7 @@ return new class extends Migration {
         Schema::create('roles', function (Blueprint $table) {
             $table->id('role_id');
             $table->string('role_name', 30)->unique(); // Admin, Teacher, Student
+            $table->timestamps(); // created_at , updated_at
         });
     }
 

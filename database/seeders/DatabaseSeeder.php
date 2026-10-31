@@ -69,6 +69,12 @@ class DatabaseSeeder extends Seeder
             'course_id'   => $course->course_id,
         ]);
 
-        $this->call(TeacherSeeder::class);
+
+
+        $this->call([
+            RoleSeeder::class,
+            TeacherSeeder::class,
+            StudentSeeder::class,
+        ]);
     }
 }
