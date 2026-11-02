@@ -141,3 +141,5 @@ $sections = [
         document.getElementById('photo-initials').classList.add('hidden');
     }
 </script>
+
+@include('layouts.partials.confirm-modal')

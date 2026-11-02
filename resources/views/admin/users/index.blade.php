@@ -114,7 +114,14 @@ $iconBtn = 'flex h-9 w-9 items-center justify-center rounded-lg border border-sl
             </tr>
             @empty
             <tr>
-                <td colspan="4" class="px-4 py-12 text-center text-slate-400">No {{ $type }} yet.</td>
+                <td colspan="4" class="px-4 py-12 text-center text-slate-400">
+                    @if ($search !== '')
+                    No {{ $type }} found for "{{ $search }}".
+                    <a href="{{ route('admin.users.index', ['type' => $type]) }}" class="font-semibold text-[#00786F] hover:underline">Clear search</a>
+                    @else
+                    No {{ $type }} yet.
+                    @endif
+                </td>
             </tr>
             @endforelse
         </tbody>

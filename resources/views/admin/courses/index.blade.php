@@ -119,10 +119,16 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
             </svg>
             <p class="text-slate-500 font-bold text-sm">No courses found in the system.</p>
-            <p class="text-xs text-slate-400 mt-1">Click "New course" button to add a course.</p>
+            @if ($search !== '')
+            No courses found for "{{ $search }}".
+            <a href="{{ route('admin.Course.index') }}" class="font-semibold text-[#00786F] hover:underline">Clear search</a>
+            @else
+            No courses yet. Click "New course" to add the first one.
+            @endif
         </div>
         @endforelse
     </div>
 
 </div>
+@include('layouts.partials.confirm-modal')
 @endsection

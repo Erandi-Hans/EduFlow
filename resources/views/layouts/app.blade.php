@@ -36,6 +36,19 @@
 
     // Hide menu items whose route does not exist yet (avoids RouteNotFound errors)
     $nav = array_values(array_filter($nav, fn ($item) => \Illuminate\Support\Facades\Route::has($item[1])));
+
+    // Search: where the top search box sends the visitor, and what it says.
+    // Admin pages: Courses search courses, everything else searches users. Other roles have no search yet.
+    $searchAction = null;
+    if ($role === 'Admin') {
+    if (request()->routeIs('admin.Course.*')) {
+    $searchAction = route('admin.Course.index');
+    $searchHint = 'Search courses...';
+    } else {
+    $searchAction = route('admin.users.index');
+    $searchHint = 'Search by name or email...';
+    }
+    }
     @endphp
 
     <div class="min-h-screen lg:flex">
@@ -64,13 +77,34 @@
 
             {{-- Top bar: search + notifications (search is visual only for now) --}}
             <div class="flex items-center justify-between gap-4 px-6 pt-6 lg:px-8">
-                <label class="flex w-full max-w-sm items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-slate-400 focus-within:border-[#00786F] focus-within:ring-2 focus-within:ring-[#00786F]/20">
-                    <svg class="h-[18px] w-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <circle cx="11" cy="11" r="8" />
-                        <path stroke-linecap="round" d="m21 21-4.3-4.3" />
-                    </svg>
-                    <input type="search" placeholder="Search..." class="w-full border-0 bg-transparent py-2.5 text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-0">
-                </label>
+
+                @if ($searchAction)
+                {{-- GET form: the typed text goes to the page as ?search=... (press Enter or click the magnifier) --}}
+                <form method="GET" action="{{ $searchAction }}" role="search"
+                    class="flex w-full max-w-sm items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-slate-400 focus-within:border-[#00786F] focus-within:ring-2 focus-within:ring-[#00786F]/20">
+                    {{-- keep the Teachers / Students tab while searching --}}
+                    @if (request()->routeIs('admin.users.*') && request('type'))
+                    <input type="hidden" name="type" value="{{ request('type') }}">
+                    @endif
+
+                    <button type="submit" aria-label="Search" class="shrink-0 hover:text-[#00786F]">
+                        <svg class="h-[18px] w-[18px]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <circle cx="11" cy="11" r="8" />
+                            <path stroke-linecap="round" d="m21 21-4.3-4.3" />
+                        </svg>
+                    </button>
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="{{ $searchHint }}" autocomplete="off"
+                        class="w-full border-0 bg-transparent py-2.5 text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-0">
+
+                    {{-- clear the search --}}
+                    @if (request('search'))
+                    <a href="{{ $searchAction }}{{ request()->routeIs('admin.users.*') && request('type') ? '?type=' . request('type') : '' }}"
+                        aria-label="Clear search" class="shrink-0 text-lg leading-none hover:text-red-500">&times;</a>
+                    @endif
+                </form>
+                @else
+                <div></div>
+                @endif
                 <button type="button" aria-label="Notifications"
                     class="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 hover:bg-[#E6F4F2] hover:text-[#00786F]">
                     <svg class="h-[18px] w-[18px]" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">

@@ -39,7 +39,6 @@ $initials = \Illuminate\Support\Str::upper(collect(explode(' ', trim($name)))->m
     @php
     $active = request()->routeIs($pattern);
 
-    // මෙන්න මෙතනට Teacher සහ Student ප්ලැට්ෆෝම් වල Coming Soon වෙන්න ඕන ලින්ක්ස් ටික දෙන්න
     $comingSoonItems = ['Courses', 'My Courses', 'Students', 'Assignments'];
     $isComingSoon = in_array($label, $comingSoonItems);
     @endphp

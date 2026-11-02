@@ -60,4 +60,5 @@
         </div>
     </div>
 </div>
+@include('layouts.partials.confirm-modal')
 @endsection
