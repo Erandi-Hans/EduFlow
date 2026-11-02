@@ -4,7 +4,9 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+// Only use this file if the "Courses" table does not exist yet (do not run it twice).
+return new class extends Migration
+{
     public function up(): void
     {
         Schema::create('Courses', function (Blueprint $table) {
